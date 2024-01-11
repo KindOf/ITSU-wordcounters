@@ -1,38 +1,26 @@
 import fs from "fs";
+import { WordExtractor, events } from "./word_extractor.js";
 
 const filepath = '../source.txt';
 
-function isCharLetter(char) {
-  return /^[a-z]$/i.test(char);
-}
-
 function count(text) {
-    const res = {};
-    let curr = "";
-    let index = 0;
+    const dict = {};
+    const we = new WordExtractor(text);
 
-    while (index <= text.length) {
-        if (isCharLetter(text[index])) {
-            curr += text[index];
+    we.on(events.WORD, (word) => {
+        dict[word] = dict[word] ? dict[word] + 1 : 1;
+    })
 
-            if (!isCharLetter(text[index+1]) && curr != "") {
-                if (res[curr.toLowerCase()]) {
-                    res[curr.toLowerCase()] += 1;
-                } else {
-                    res[curr.toLowerCase()] = 1;
-                }
+    return new Promise((resolve) => {
+        we.on(events.END, () => {
+            resolve(dict);
+        })
 
-                curr = "";
-            }
-        }
-
-        index++;
-    }
-
-    return res;
+        we.count();
+    })
 }
 
-function sortEntries(a,b) {
+function sortEntries(a, b) {
     if (a[1] === b[1]) return 0;
 
     return a[1] < b[1] ? 1 : -1;
@@ -42,11 +30,18 @@ function getTop(dict) {
     return Object.entries(dict).sort(sortEntries).slice(0, 100);
 }
 
-(() => {
-    const text = fs.readFileSync(filepath, 'utf8');
-    console.time();
-    const top = getTop(count(text));
-    console.timeEnd();
+(async () => {
+    try {
+        const text = fs.readFileSync(filepath, 'utf8');
 
-    console.log(top);
+        console.time();
+        const dict = await count(text);
+        const top = getTop(dict);
+        console.timeEnd();
+
+        console.log(top);
+    } catch (e) {
+        console.error(e)
+        process.end(1)
+    }
 })();
