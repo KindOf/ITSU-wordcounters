@@ -1,51 +1,52 @@
-import fs from "fs"
+import fs from "fs";
 
-const filepath = '../source.txt'
+const filepath = '../source.txt';
 
 function isCharLetter(char) {
   return /^[a-z]$/i.test(char);
 }
 
 function count(text) {
-    const res = {}
-    let curr = ""
-    let index = 0
+    const res = {};
+    let curr = "";
+    let index = 0;
 
     while (index <= text.length) {
         if (isCharLetter(text[index])) {
-            curr += text[index]
+            curr += text[index];
 
             if (!isCharLetter(text[index+1]) && curr != "") {
                 if (res[curr.toLowerCase()]) {
-                    res[curr.toLowerCase()] += 1 
+                    res[curr.toLowerCase()] += 1;
                 } else {
-                    res[curr.toLowerCase()] = 1
+                    res[curr.toLowerCase()] = 1;
                 }
 
-                curr = ""
+                curr = "";
             }
         }
 
-        index++
+        index++;
     }
 
-    return res
+    return res;
 }
 
 function sortEntries(a,b) {
-    console.log(a[1], b[1])
-    if (a[1] === b[1]) return 0
+    if (a[1] === b[1]) return 0;
 
-    return a[1] < b[1] ? 1 : -1
+    return a[1] < b[1] ? 1 : -1;
 }
 
 function getTop(dict) {
-    return Object.entries(dict).sort(sortEntries).slice(0, 100)
+    return Object.entries(dict).sort(sortEntries).slice(0, 100);
 }
 
 (() => {
     const text = fs.readFileSync(filepath, 'utf8');
+    console.time();
     const top = getTop(count(text));
+    console.timeEnd();
 
     console.log(top);
-})()
+})();
