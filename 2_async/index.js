@@ -16,7 +16,7 @@ function count(text) {
             resolve(dict);
         })
 
-        we.count();
+        we.count_async();
     })
 }
 
@@ -32,16 +32,18 @@ function getTop(dict) {
 
 (async () => {
     try {
+        const interval = setInterval(() => console.log("working..."), 5)
         const text = fs.readFileSync(filepath, 'utf8');
 
         console.time();
         const dict = await count(text);
         const top = getTop(dict);
         console.timeEnd();
-
+        clearInterval(interval)
         console.log(top);
+
     } catch (e) {
         console.error(e)
-        process.end(1)
+        process.exit(1)
     }
 })();
