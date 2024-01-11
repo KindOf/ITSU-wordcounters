@@ -4,14 +4,16 @@ const filepath = '../source.txt';
 
 (async () => {
     try {
+        const interval = setInterval(() => console.log("working..."))
         const text = fs.readFileSync(filepath, 'utf8');
 
         console.time();
         const top = Object.entries(text.split(/[^A-Z]/ig)
             .reduce((dict, word) => {
                 if (word == '') return dict
+                const w = word.toLowerCase()
 
-                dict[word] = dict[word] ? dict[word] + 1 : 1;
+                dict[w] = dict[w] ? dict[w] + 1 : 1;
                 return dict;
             }, {}))
             .sort((a, b) => {
@@ -24,6 +26,7 @@ const filepath = '../source.txt';
         console.timeEnd();
 
         console.log(top)
+        clearInterval(interval)
     } catch (e) {
         console.error(e)
         process.end(1)
