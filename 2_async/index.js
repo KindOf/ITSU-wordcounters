@@ -8,7 +8,12 @@ function count(text) {
     const we = new WordExtractor(text);
 
     we.on(events.WORD, (word) => {
-        dict[word] = dict[word] ? dict[word] + 1 : 1;
+        if (dict[word]) {
+            dict[word] += 1;
+        } else {
+            console.log('WORD', word);
+            dict[word] = 1;
+        }
     })
 
     return new Promise((resolve) => {
@@ -32,16 +37,16 @@ function getTop(dict) {
 
 (async () => {
     try {
+        console.time();
         const interval = setInterval(() => console.log("working..."), 5)
         const text = fs.readFileSync(filepath, 'utf8');
 
-        console.time();
         const dict = await count(text);
         const top = getTop(dict);
+
         console.timeEnd();
         clearInterval(interval)
         console.log(top);
-
     } catch (e) {
         console.error(e)
         process.exit(1)
