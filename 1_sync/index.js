@@ -4,10 +4,10 @@ const filepath = '../source.txt';
 
 (async () => {
     try {
+        console.time();
         const interval = setInterval(() => console.log("working..."))
         const text = fs.readFileSync(filepath, 'utf8');
 
-        console.time();
         const top = Object.entries(text.split(/[^A-Z]/ig)
             .reduce((dict, word) => {
                 if (word == '') return dict
@@ -29,6 +29,6 @@ const filepath = '../source.txt';
         clearInterval(interval)
     } catch (e) {
         console.error(e)
-        process.end(1)
+        process.exit(1)
     }
 })();
